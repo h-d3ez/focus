@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Focus — Tasks</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+
+    <!-- Pomodoro focus dim overlay (behind card) -->
+    <div class="pomodoro-overlay" id="pomodoroOverlay"></div>
+
+    <!-- ── Main App ─────────────────────────────────────────── -->
+    <main class="app" id="app">
+
+      <!-- Header -->
+      <header class="app-header">
+        <h1 class="app-title">focus</h1>
+        <div class="header-actions">
+          <button class="icon-btn" id="shortcutsBtn" title="Keyboard shortcuts (⌘K)" aria-label="Open keyboard shortcuts">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="6" width="4" height="5" rx="1"/><rect x="10" y="6" width="4" height="5" rx="1"/>
+              <rect x="18" y="6" width="4" height="5" rx="1"/><rect x="2" y="15" width="4" height="3" rx="1"/>
+              <rect x="10" y="15" width="12" height="3" rx="1"/>
+            </svg>
+          </button>
+          <button class="icon-btn" id="settingsBtn" title="Settings" aria-label="Open settings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Todo Card -->
+      <div class="card" id="todoCard">
+
+        <!-- Input row -->
+        <div class="input-wrapper">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          <input
+            type="text"
+            id="todoInput"
+            class="todo-input"
+            placeholder="Add a task… use #tag to categorize"
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="New task"
+          />
+        </div>
+
+        <!-- Tag filter banner — hidden until a tag pill is clicked -->
+        <div class="tag-filter-bar" id="tagFilterBar" hidden aria-hidden="true" aria-live="polite">
+          <span>Showing <strong id="tagFilterName"></strong></span>
+          <button class="tag-filter-clear-btn" id="tagFilterClear" aria-label="Clear tag filter">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+            Clear
+          </button>
+        </div>
+
+        <!-- Task list — all interaction delegated to this element -->
+        <ul class="todo-list" id="todoList" role="list" aria-label="Tasks"></ul>
+
+        <!-- Footer bar -->
+        <div class="card-footer">
+          <span class="task-counter" id="taskCounter">0 tasks remaining</span>
+
+          <nav class="filter-tabs" role="tablist" aria-label="Filter tasks">
+            <button class="filter-tab active" data-filter="all"       role="tab" aria-selected="true">All</button>
+            <button class="filter-tab"         data-filter="active"    role="tab" aria-selected="false">Active</button>
+            <button class="filter-tab"         data-filter="completed" role="tab" aria-selected="false">Completed</button>
+          </nav>
+
+          <button class="clear-btn hidden" id="clearCompletedBtn" aria-label="Clear completed tasks">
+            Clear Completed
+          </button>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ── Settings Panel ────────────────────────────────────── -->
+    <aside class="settings-panel" id="settingsPanel" aria-hidden="true" aria-label="Data management">
+      <p class="settings-label">Data</p>
+      <button class="settings-action-btn" id="exportBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Export backup
+      </button>
+      <label class="settings-action-btn import-label" for="importFile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        Import backup
+        <input type="file" id="importFile" accept=".json" hidden />
+      </label>
+    </aside>
+
+    <!-- ── Keyboard Shortcuts Modal ──────────────────────────── -->
+    <div class="modal-overlay" id="shortcutsModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalTitle">Keyboard shortcuts</h2>
+          <button class="modal-close" id="closeModalBtn" aria-label="Close shortcuts modal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <dl class="shortcuts-list">
+          <div class="shortcut-row"><dt><kbd>N</kbd></dt><dd>Focus input</dd></div>
+          <div class="shortcut-row"><dt><kbd>⌘ K</kbd></dt><dd>Toggle this panel</dd></div>
+          <div class="shortcut-row"><dt><kbd>↑</kbd> <kbd>↓</kbd></dt><dd>Navigate list</dd></div>
+          <div class="shortcut-row"><dt><kbd>Space</kbd></dt><dd>Toggle selected item</dd></div>
+          <div class="shortcut-row"><dt><kbd>⌫</kbd></dt><dd>Delete selected item</dd></div>
+          <div class="shortcut-row"><dt><kbd>Esc</kbd></dt><dd>Blur / close / clear filter</dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <!-- ── Toast container ───────────────────────────────────── -->
+    <div class="toast-container" id="toastContainer" aria-live="assertive" aria-atomic="false"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
